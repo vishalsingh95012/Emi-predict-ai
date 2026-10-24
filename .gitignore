@@ -1,0 +1,22 @@
+# Virtual environment
+venv/
+
+# MLflow
+mlflow.db
+mlruns/
+
+# Data files (large/raw; keep data/sample.csv tracked)
+data/EMI_dataset.csv
+data/clean_featured.csv
+data/records.csv
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+
+# OS
+.DS_Store
+Thumbs.db
