@@ -1,6 +1,8 @@
 import streamlit as st, pandas as pd, joblib
 from src.features import add_features
 
+
+
 st.set_page_config(page_title="EMIPredict AI", page_icon="💰", layout="wide")
 
 @st.cache_resource
@@ -11,8 +13,16 @@ def load_models():
 
 clf, reg, le = load_models()
 
+RANGES = {   # (amount_min, amount_max, tenure_min, tenure_max), dataset ki range
+    "E-commerce Shopping EMI": (10_000, 200_000, 3, 24),
+    "Home Appliances EMI":     (20_000, 300_000, 6, 36),
+    "Vehicle EMI":             (80_000, 1_500_000, 12, 84),
+    "Personal Loan EMI":       (50_000, 1_000_000, 12, 60),
+    "Education EMI":           (50_000, 500_000, 6, 48),
+}
+
 st.title("💰 EMIPredict AI")
-st.caption("EMI eligibility aur maximum safe monthly EMI ka instant assessment")
+st.caption("Instant assessment of EMI eligibility and the maximum safe monthly EMI")
 
 with st.form("emi_form"):
     st.subheader("Personal")
@@ -54,16 +64,21 @@ with st.form("emi_form"):
     a, b, c = st.columns(3)
     scenario = a.selectbox("EMI scenario", ["E-commerce Shopping EMI", "Home Appliances EMI",
                                             "Vehicle EMI", "Personal Loan EMI", "Education EMI"])
-    amount = b.number_input("Requested amount (INR)", 10000, 1500000, 200000, step=5000)
-    tenure = c.number_input("Tenure (months)", 3, 84, 24)
+    amount = b.number_input("Requested amount (INR)", *RANGES[scenario][:2], 200000, step=5000)
+    tenure = c.number_input("Tenure (months)", *RANGES[scenario][2:4], 24)
 
     go = st.form_submit_button("Assess", type="primary")
 
 if go:
     if years > age - 18:
-        st.error("Years of employment age ke hisaab se zyada hain."); st.stop()
+        st.error("Years of employment cannot exceed your working-age years."); st.stop()
     if dependents >= family:
-        st.error("Dependents family size se kam hone chahiye."); st.stop()
+        st.error("Dependents cannot exceed family size."); st.stop()
+
+    a_lo, a_hi, t_lo, t_hi = RANGES[scenario]
+    if not (a_lo <= amount <= a_hi) or not (t_lo <= tenure <= t_hi):
+        st.warning(f"⚠️ For {scenario}, the training data covers amounts from ₹{a_lo:,} to ₹{a_hi:,} "
+                   f"and tenures from {t_lo} to {t_hi} months. Predictions outside this range are less reliable.")
 
     row = pd.DataFrame([{
         "age": age, "gender": gender, "marital_status": marital, "education": education,
@@ -87,9 +102,9 @@ if go:
     c2.metric("Max safe monthly EMI", f"₹{max_emi:,.0f}")
     c3.metric("Requested EMI", f"₹{req_emi:,.0f}", delta=f"{(max_emi - req_emi):,.0f} margin")
 
-    msg = {"Eligible": "Low risk: EMI comfortably affordable hai.",
-           "High_Risk": "Marginal case: loan possible hai, par higher interest rate lag sakta hai.",
-           "Not_Eligible": "High risk: is request par loan recommend nahi hai."}[label]
+    msg = {"Eligible": "Low risk: the EMI is comfortably affordable.",
+           "High_Risk": "Marginal case: the loan is possible, but a higher interest rate may apply.",
+           "Not_Eligible": "High risk: this loan request is not recommended."}[label]
     {"Eligible": st.success, "High_Risk": st.warning, "Not_Eligible": st.error}[label](msg)
 
     st.bar_chart(pd.Series(proba, index=le.classes_, name="probability"))
