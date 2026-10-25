@@ -2,7 +2,7 @@ import streamlit as st, pandas as pd
 st.title("📊 Data Explorer")
 
 df = pd.read_csv("data/sample.csv")
-st.caption(f"{len(df):,} records ka sample (original dataset: 400K)")
+st.caption(f"Sample of {len(df):,} records from the original 400K dataset")
 
 opts = list(df["emi_scenario"].unique())
 sc = st.multiselect("EMI scenario", opts, default=opts)

@@ -8,7 +8,7 @@ if not os.path.exists(PATH):
 if "df" not in st.session_state:
     st.session_state.df = pd.read_csv(PATH)
 
-st.caption("Edit: cell par double click. Add: table ke neeche '+' row. Delete: row select karke Delete key. Phir Save dabao.")
+st.caption("Edit: double-click a cell. Add: use the + row below the table. Delete: select a row and press Delete. Then click Save.")
 edited = st.data_editor(st.session_state.df, num_rows="dynamic", height=450)
 
 c1, c2, c3 = st.columns([1, 1, 1])

@@ -11,5 +11,5 @@ st.subheader("Regression (validation)")
 st.dataframe(reg, hide_index=True)
 st.bar_chart(reg.set_index("model")[["val_rmse"]])
 
-st.success("Best models: XGBoost Classifier aur XGBoost Regressor (MLflow Model Registry mein registered).")
-st.caption("Poora experiment tracking dashboard locally `mlflow ui` se dekha ja sakta hai.")
+st.success("Best models: XGBoost Classifier and XGBoost Regressor (registered in the MLflow Model Registry).")
+st.caption("The full experiment tracking dashboard is available locally via `mlflow ui`.")

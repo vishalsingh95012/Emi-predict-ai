@@ -1,8 +1,6 @@
 import streamlit as st, pandas as pd, joblib
 from src.features import add_features
 
-
-
 st.set_page_config(page_title="EMIPredict AI", page_icon="💰", layout="wide")
 
 @st.cache_resource
@@ -13,7 +11,7 @@ def load_models():
 
 clf, reg, le = load_models()
 
-RANGES = {   # (amount_min, amount_max, tenure_min, tenure_max), dataset ki range
+RANGES = {  # (amount_min, amount_max, tenure_min, tenure_max) from the training data
     "E-commerce Shopping EMI": (10_000, 200_000, 3, 24),
     "Home Appliances EMI":     (20_000, 300_000, 6, 36),
     "Vehicle EMI":             (80_000, 1_500_000, 12, 84),
@@ -64,8 +62,8 @@ with st.form("emi_form"):
     a, b, c = st.columns(3)
     scenario = a.selectbox("EMI scenario", ["E-commerce Shopping EMI", "Home Appliances EMI",
                                             "Vehicle EMI", "Personal Loan EMI", "Education EMI"])
-    amount = b.number_input("Requested amount (INR)", *RANGES[scenario][:2], 200000, step=5000)
-    tenure = c.number_input("Tenure (months)", *RANGES[scenario][2:4], 24)
+    amount = b.number_input("Requested amount (INR)", 10000, 1500000, 200000, step=5000)
+    tenure = c.number_input("Tenure (months)", 3, 84, 24)
 
     go = st.form_submit_button("Assess", type="primary")
 
@@ -73,7 +71,7 @@ if go:
     if years > age - 18:
         st.error("Years of employment cannot exceed your working-age years."); st.stop()
     if dependents >= family:
-        st.error("Dependents cannot exceed family size."); st.stop()
+        st.error("Dependents must be fewer than the family size."); st.stop()
 
     a_lo, a_hi, t_lo, t_hi = RANGES[scenario]
     if not (a_lo <= amount <= a_hi) or not (t_lo <= tenure <= t_hi):
