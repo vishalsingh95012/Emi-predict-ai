@@ -2,7 +2,7 @@
 
 Machine learning platform that predicts **EMI eligibility** (classification) and the **maximum safe monthly EMI** (regression), with MLflow experiment tracking and a multi-page Streamlit app.
 
-**Live app:** https://empredict-ai.streamlit.app
+**Live app:** https://emipredict-ai-app.streamlit.app
 
 ## Features
 - Real-time prediction: Eligible / High_Risk / Not_Eligible, class probabilities, maximum safe monthly EMI
